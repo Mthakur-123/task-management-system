@@ -27,10 +27,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService  userDetailsService;
     
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//    	   String path = request.getServletpath();
+//    	 
+//        return path.startsWith("/api/auth") || path.startsWith("/swagger-ui")
+//        		|| path.startsWith("/v3/api-docs")|| path.startsWith("/swagger-ui.html");
+//    }
+    
+    
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-    	 
-        return request.getServletPath().startsWith("/api/auth");
+    protected boolean shouldNotFilter(jakarta.servlet.http.HttpServletRequest request) throws jakarta.servlet.ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth") || 
+               path.startsWith("/v3/api-docs") || 
+               path.startsWith("/swagger-ui");
     }
 
     @Override
