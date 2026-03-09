@@ -64,7 +64,7 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             // 3. Authorization rules
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/*", "/swagger-ui/", "/v3/api-docs/*", "/swagger-ui.html").permitAll()
+                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/h2-console/**").permitAll() // Ensure this matches the CSRF line
                 .anyRequest().authenticated()
             )
