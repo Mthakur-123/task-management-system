@@ -37,7 +37,7 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
-            .headers(Headers -> Headers.frameOptions(Frame -> Frame.disable()))
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .authorizeHttpRequests(auth -> auth
             		
                 .requestMatchers("/api/auth/**").permitAll()
