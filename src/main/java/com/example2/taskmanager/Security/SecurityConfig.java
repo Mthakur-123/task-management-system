@@ -2,6 +2,8 @@ package com.example2.taskmanager.Security;
 
 
 
+import java.awt.Frame;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +37,7 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+            .headers(Headers -> Headers.frameOptions(Frame -> Frame.disable()))
             .authorizeHttpRequests(auth -> auth
             		
                 .requestMatchers("/api/auth/**").permitAll()
