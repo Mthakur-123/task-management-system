@@ -31,41 +31,17 @@ public class SecurityConfig {
 
     @Autowired
     private  JwtAuthFilter jwtAuthFilter;
-   
-//    @Bean
-//     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//
-//        http
-//            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**").disable())
-//            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-//            .authorizeHttpRequests(auth -> auth
-//            		
-//                .requestMatchers("/api/auth/**","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**","/h2-console","/h2-console/**").permitAll()
-//                .anyRequest().authenticated()
-//            )
-//            .sessionManagement(session ->
-//                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//            );
-//        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-    
-    
-    
+  
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Disable CSRF for H2 Console specifically
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/h2-console/**")
                 .disable())
-            // 2. Allow frames for H2 UI
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-            // 3. Authorization rules
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/h2-console/**").permitAll() // Ensure this matches the CSRF line
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
