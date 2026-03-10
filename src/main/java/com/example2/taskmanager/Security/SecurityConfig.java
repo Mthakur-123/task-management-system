@@ -15,7 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
 @Configuration
+@SecurityScheme(name = "bearerAuth",type = SecuritySchemeType.HTTP,scheme = "bearer",bearerFormat = "JWT")
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -50,6 +54,16 @@ public class SecurityConfig {
 
         return http.build();
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     @Bean
     public PasswordEncoder passwordEncoder() {

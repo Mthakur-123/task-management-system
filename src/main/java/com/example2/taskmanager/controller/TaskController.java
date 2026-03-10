@@ -21,8 +21,12 @@ import com.example2.taskmanager.DTO.ApiResponse;
 import com.example2.taskmanager.Model.Task;
 import com.example2.taskmanager.Service.TaskService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 
+
+
+@SecurityRequirement(name ="bearerAuth")
 @PreAuthorize("hasAuthority('ROLE_USER')") 
 @RestController
 @RequestMapping("/api/tasks")
