@@ -27,42 +27,33 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Disable CSRF for H2 Console specifically
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/h2-console/**")
-                .disable()
-            )
-            // 2. Allow frames so the H2 UI can display correctly
+            // 1. For Stateless APIs using JWT, we usually disable CSRF globally
+            .csrf(csrf -> csrf.disable()) 
+            
+            // 2. REQUIRED FOR H2: SameOrigin allows H2 to use its own frames
             .headers(headers -> headers
-                .frameOptions(frame -> frame.disable())
+                .frameOptions(frame -> frame.sameOrigin())
             )
-            // 3. Set up permissions
+            
+            // 3. Permissions
             .authorizeHttpRequests(auth -> auth
+                // Use .permitAll() for all public entry points
                 .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
-            // 4. Stateless session for JWT
+            
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
 
-        // Add our JWT Filter
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 
     @Bean
@@ -75,31 +66,3 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

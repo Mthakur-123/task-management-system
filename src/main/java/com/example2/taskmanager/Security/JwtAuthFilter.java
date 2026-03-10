@@ -39,7 +39,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                path.startsWith("/h2-console"); 
     }
     
-    
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -48,35 +47,70 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        // ✅ Check properly
+        // Only try to authenticate if the header is actually there
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
                 String username = jwtUtil.extractUsername(token);
 
-                if (username != null &&
-                    SecurityContextHolder.getContext().getAuthentication() == null &&
-                    jwtUtil.isTokenValid(token)) {
-
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     
-                    UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    if (jwtUtil.isTokenValid(token)) { // Moved the validity check here
+                        UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
                 }
-            } catch (ExpiredJwtException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
             } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                // Log the error but don't always block the whole chain 
+                // unless you want to strictly forbid access on any JWT error
+                logger.error("JWT Authentication failed: " + e.getMessage());
             }
         }
 
-        chain.doFilter(request, response); // continue processing
+        // ALWAYS call this at the end to ensure the request continues to the next filter/controller
+        chain.doFilter(request, response);
     }
+    
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request,
+//                                    HttpServletResponse response,
+//                                    FilterChain chain)
+//            throws ServletException, IOException {
+//
+//        String header = request.getHeader("Authorization");
+//
+//        // ✅ Check properly
+//        if (header != null && header.startsWith("Bearer ")) {
+//            String token = header.substring(7);
+//            try {
+//                String username = jwtUtil.extractUsername(token);
+//
+//                if (username != null &&
+//                    SecurityContextHolder.getContext().getAuthentication() == null &&
+//                    jwtUtil.isTokenValid(token)) {
+//
+//                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//                    
+//                    UsernamePasswordAuthenticationToken auth =
+//                        new UsernamePasswordAuthenticationToken(
+//                            userDetails, null, userDetails.getAuthorities());
+//
+//                    SecurityContextHolder.getContext().setAuthentication(auth);
+//                }
+//            } catch (ExpiredJwtException e) {
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                return;
+//            } catch (Exception e) {
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                return;
+//            }
+//        }
+//
+//        chain.doFilter(request, response); // continue processing
+    
     }
     
          
